@@ -1,0 +1,38 @@
+{
+  "name": "Cash Honey — AI Finance Advisor",
+  "short_name": "Cash Honey",
+  "description": "Track budgets, goals, investments, and get personalized AI financial advice. Your money, sweeter.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#FFFBEB",
+  "theme_color": "#D97706",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "en",
+  "categories": ["finance", "productivity"],
+  "screenshots": [],
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ],
+  "related_applications": [],
+  "prefer_related_applications": false,
+  "shortcuts": [
+    {
+      "name": "AI Advisor",
+      "short_name": "AI",
+      "url": "/?tab=ai",
+      "icons": [{ "src": "/icon.svg", "sizes": "any" }]
+    },
+    {
+      "name": "Dashboard",
+      "short_name": "Home",
+      "url": "/?tab=home",
+      "icons": [{ "src": "/icon.svg", "sizes": "any" }]
+    }
+  ]
+}

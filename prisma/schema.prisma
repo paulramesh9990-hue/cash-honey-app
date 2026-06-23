@@ -1,0 +1,134 @@
+// SHOGO:CUSTOM-START prisma-header
+// Managed by Shogo. Do not add a datasource `url` or change the generator `provider` — the database URL is configured in prisma.config.ts (Prisma 7+).
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+// SHOGO:CUSTOM-END
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  name          String?
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+  monthlyIncome Float?
+  riskTolerance String?   @default("moderate") // conservative, moderate, aggressive
+  currency      String?   @default("USD")
+
+  accounts      Account[]
+  transactions  Transaction[]
+  budgets       Budget[]
+  goals         Goal[]
+  portfolios    Portfolio[]
+  recommendations Recommendation[]
+
+  @@map("users")
+}
+
+model Account {
+  id        String   @id @default(cuid())
+  userId    String
+  name      String
+  type      String   // checking, savings, credit, investment
+  balance   Float    @default(0)
+  currency  String   @default("USD")
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  transactions Transaction[]
+  portfolios   Portfolio[]
+
+  @@map("accounts")
+}
+
+model Transaction {
+  id          String   @id @default(cuid())
+  userId      String
+  accountId   String
+  amount      Float
+  type        String   // income, expense
+  category    String   // food, transportation, entertainment, utilities, salary, etc.
+  description String?
+  date        DateTime @default(now())
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  account Account @relation(fields: [accountId], references: [id], onDelete: Cascade)
+
+  @@map("transactions")
+}
+
+model Budget {
+  id        String   @id @default(cuid())
+  userId    String
+  category  String
+  amount    Float
+  spent     Float    @default(0)
+  month     Int
+  year      Int
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, category, month, year])
+  @@map("budgets")
+}
+
+model Goal {
+  id          String   @id @default(cuid())
+  userId      String
+  name        String
+  type        String   // savings, investment, debt_payoff
+  targetAmount Float
+  currentAmount Float  @default(0)
+  deadline    DateTime?
+  priority    String?  @default("medium") // low, medium, high
+  isCompleted Boolean  @default(false)
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("goals")
+}
+
+model Portfolio {
+  id        String   @id @default(cuid())
+  userId    String
+  accountId String
+  symbol    String   // stock ticker
+  name      String
+  quantity  Float
+  avgCost   Float
+  currentPrice Float @default(0)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  account Account @relation(fields: [accountId], references: [id], onDelete: Cascade)
+
+  @@map("portfolios")
+}
+
+model Recommendation {
+  id        String   @id @default(cuid())
+  userId    String
+  type      String   // budget, investment, savings, insight
+  title     String
+  content   String
+  priority  String?  @default("medium")
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("recommendations")
+}
